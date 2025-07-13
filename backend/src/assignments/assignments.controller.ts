@@ -9,6 +9,9 @@ import {
 } from '@nestjs/common';
 import { AssignmentsService } from './assignments.service';
 import { Assignment } from './assignment.entity';
+import { CreateAssignmentDto } from './dto/create-assignment.dto';
+import { Patient } from 'src/patients/patient.entity';
+import { Medication } from 'src/medications/medication.entity';
 
 @Controller('assignments')
 export class AssignmentsController {
@@ -19,10 +22,15 @@ export class AssignmentsController {
     const remainingDays = await this.assignmentsService.getRemainingDays(+id);
     return { assignmentId: +id, remainingDays };
   }
-  
+
   @Post()
-  create(@Body() data: Partial<Assignment>) {
-    return this.assignmentsService.create(data);
+  create(@Body() data: CreateAssignmentDto) {
+    const { patientId, medicationId, ...rest } = data;
+    return this.assignmentsService.create({
+      ...rest,
+      patient: { id: patientId } as Patient,
+      medication: { id: medicationId } as Medication,
+    });
   }
 
   @Get()
