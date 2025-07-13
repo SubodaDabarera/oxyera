@@ -7,11 +7,11 @@ export class Assignment {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column('int')
+  duration: number;
+
   @Column({ type: 'date' })
   startDate: string;
-
-  @Column('int')
-  duration: number; 
 
   @ManyToOne(() => Patient, (patient) => patient.assignments)
   patient: Patient;

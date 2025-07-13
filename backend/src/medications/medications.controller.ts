@@ -9,13 +9,14 @@ import {
 } from '@nestjs/common';
 import { MedicationsService } from './medications.service';
 import { Medication } from './medication.entity';
+import { CreateMedicationDto } from './dto/create-medication.dto';
 
 @Controller('medications')
 export class MedicationsController {
   constructor(private readonly medicationsService: MedicationsService) {}
 
   @Post()
-  create(@Body() data: Partial<Medication>) {
+  create(@Body() data: CreateMedicationDto) {
     return this.medicationsService.create(data);
   }
 
