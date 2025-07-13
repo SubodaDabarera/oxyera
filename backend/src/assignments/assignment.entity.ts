@@ -10,8 +10,8 @@ export class Assignment {
   @Column({ type: 'date' })
   startDate: string;
 
-  @Column()
-  days: number;
+  @Column('int')
+  duration: number; 
 
   @ManyToOne(() => Patient, (patient) => patient.assignments)
   patient: Patient;

@@ -19,11 +19,9 @@ export class AssignmentsService {
     return this.assignmentsRepo.find({ relations: ['patient', 'medication'] });
   }
 
-  findOne(id: number): Promise<Assignment | null> {
-    return this.assignmentsRepo.findOne({
-      where: { id },
-      relations: ['patient', 'medication'],
-    });
+  async findOne(id: number): Promise<Assignment | null> {
+    const assignment = await this.assignmentsRepo.findOne({ where: { id } });
+    return assignment;
   }
 
   async update(
@@ -36,5 +34,20 @@ export class AssignmentsService {
 
   async remove(id: number): Promise<void> {
     await this.assignmentsRepo.delete(id);
+  }
+
+  calculateRemainingDays(startDate: string, duration: number): number {
+    const start = new Date(startDate);
+    const end = new Date(start);
+    end.setDate(start.getDate() + duration);
+    const today = new Date();
+    // Clear time portion for comparison
+    const diff = end.getTime() - today.setHours(0, 0, 0, 0);
+    return Math.max(Math.ceil(diff / (1000 * 60 * 60 * 24)), 0);
+  }
+
+  async getRemainingDays(id: number): Promise<number> {
+    const assignment = await this.findOne(id);
+    return this.calculateRemainingDays(assignment.startDate, assignment.duration);
   }
 }

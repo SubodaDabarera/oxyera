@@ -14,6 +14,12 @@ import { Assignment } from './assignment.entity';
 export class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 
+  @Get(':id/remaining-days')
+  async getRemainingDays(@Param('id') id: string) {
+    const remainingDays = await this.assignmentsService.getRemainingDays(+id);
+    return { assignmentId: +id, remainingDays };
+  }
+  
   @Post()
   create(@Body() data: Partial<Assignment>) {
     return this.assignmentsService.create(data);
