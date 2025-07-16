@@ -1,8 +1,7 @@
 "use client"
 
+import { API_BASE_URL } from '@/lib/api';
 import { useEffect, useState } from 'react';
-
-const API = "http://localhost:8080";
 
 type SampleEntity = { id: number; name: string };
 
@@ -11,14 +10,14 @@ export default function Home() {
   const [name, setName] = useState('');
 
   const fetchSamples = async () => {
-    const res = await fetch(`${API}/sample`);
+    const res = await fetch(`${API_BASE_URL}/sample`);
     const data = await res.json();
     setSamples(data);
   };
 
   const createSample = async () => {
     if (!name.trim()) return;
-    await fetch(`${API}/sample`, {
+    await fetch(`${API_BASE_URL}/sample`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name }),
