@@ -19,7 +19,7 @@ export default function MedicationsPage() {
   const fetchMedications = async () => {
     const res = await fetch(`${API_BASE_URL}/medications`);
     const data = await res.json();
-    setMedications(data);
+    setMedications(data.data);
   };
 
   const createMedication = async () => {
