@@ -10,33 +10,63 @@ import {
 import { MedicationsService } from './medications.service';
 import { Medication } from './medication.entity';
 import { CreateMedicationDto } from './dto/create-medication.dto';
+import {
+  ApiResponse,
+  ApiSuccessResponse,
+} from 'src/common/dto/api-response.dto';
 
 @Controller('medications')
 export class MedicationsController {
   constructor(private readonly medicationsService: MedicationsService) {}
 
   @Post()
-  create(@Body() data: CreateMedicationDto) {
-    return this.medicationsService.create(data);
+  async create(
+    @Body() data: CreateMedicationDto,
+  ): Promise<ApiResponse<Medication>> {
+    const medication = await this.medicationsService.create(data);
+    return new ApiSuccessResponse(
+      'Medication created successfully',
+      medication,
+      true,
+      201,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.medicationsService.findAll();
+  async findAll(): Promise<ApiResponse<Medication[]>> {
+    const medications = await this.medicationsService.findAll();
+    return new ApiSuccessResponse(
+      'Medications fetched successfully',
+      medications,
+    );
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.medicationsService.findOne(+id);
+  async findOne(
+    @Param('id') id: string,
+  ): Promise<ApiResponse<Medication | null>> {
+    const medication = await this.medicationsService.findOne(+id);
+    return new ApiSuccessResponse(
+      'Medication fetched successfully',
+      medication,
+    );
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: Partial<Medication>) {
-    return this.medicationsService.update(+id, data);
+  async update(
+    @Param('id') id: string,
+    @Body() data: Partial<Medication>,
+  ): Promise<ApiResponse<Medication | null>> {
+    const medication = await this.medicationsService.update(+id, data);
+    return new ApiSuccessResponse(
+      'Medication updated successfully',
+      medication,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.medicationsService.remove(+id);
+  async remove(@Param('id') id: string): Promise<ApiResponse<{} | null>> {
+    await this.medicationsService.remove(+id);
+    return new ApiSuccessResponse('Medication removed successfully', {}, true);
   }
 }
