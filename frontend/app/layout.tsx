@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import { Routes } from "@/lib/api";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,9 +30,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <nav className="px-6 py-4 flex gap-10 border-bottom border-bottom-2">
-          <Link href={"/patients"}>Patients</Link>
-          <Link href={"/medications"}>Medications</Link>
-          <Link href={"/assignments"}>Assignments</Link>
+          <Link href={Routes.Patient}>Patients</Link>
+          <Link href={Routes.Medication}>Medications</Link>
+          <Link href={Routes.Assignment}>Assignments</Link>
         </nav>
         {children}
       </body>
