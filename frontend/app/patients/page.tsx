@@ -1,61 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../../lib/api";
 import { calculateRemainingDays } from "@/lib/utils";
-
-interface Patient {
-  id: number;
-  name: string;
-  dateOfBirth: string;
-}
-
-interface Medication {
-  id: number;
-  name: string;
-}
-
-interface Assignment {
-  id: number;
-  startDate: string;
-  duration: number;
-  patient: Patient;
-  medication: Medication;
-}
+import usePatient from "@/api/usePatient";
+import useAssignments from "@/api/useAssignment";
+import Patient from "@/lib/types/patient";
+import Assignment from "@/lib/types/assignment";
 
 export default function PatientsPage() {
+  const { fetchPatients, createNewPatient } = usePatient();
+  const { fetchAssignments } = useAssignments();
+
   const [patients, setPatients] = useState<Patient[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [name, setName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
 
-  const fetchPatients = async () => {
-    const res = await fetch(`${API_BASE_URL}/patients`);
-    const data = await res.json();
-    setPatients(data.data);
+  const getPatients = async () => {
+    setPatients(await fetchPatients());
   };
 
-  const fetchAssignments = async () => {
-    const res = await fetch(`${API_BASE_URL}/assignments`);
-    const data = await res.json();
-    setAssignments(data.data);
+  const getAssignments = async () => {
+    setAssignments(await fetchAssignments());
   };
 
   const createPatient = async () => {
-    if (!name.trim() || !dateOfBirth) return;
-    await fetch(`${API_BASE_URL}/patients`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, dateOfBirth }),
-    });
+    await createNewPatient({ name, dateOfBirth });
     setName("");
     setDateOfBirth("");
-    fetchPatients();
+    getPatients();
   };
 
   useEffect(() => {
-    fetchPatients();
-    fetchAssignments();
+    getPatients();
+    getAssignments();
   }, []);
 
   return (

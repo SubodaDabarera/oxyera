@@ -1,42 +1,32 @@
 "use client";
 
+import useMedication from "@/api/useMedication";
 import { API_BASE_URL } from "@/lib/api";
+import Medication from "@/lib/types/medication";
 import { useEffect, useState } from "react";
 
-interface Medication {
-  id: number;
-  name: string;
-  dosage: string;
-  frequency: string;
-}
-
 export default function MedicationsPage() {
+  const { fetchMedications, createNewMedication } = useMedication();
+
   const [medications, setMedications] = useState<Medication[]>([]);
   const [name, setName] = useState("");
   const [dosage, setDosage] = useState("");
   const [frequency, setFrequency] = useState("");
 
-  const fetchMedications = async () => {
-    const res = await fetch(`${API_BASE_URL}/medications`);
-    const data = await res.json();
-    setMedications(data.data);
+  const getMedications = async () => {
+    setMedications(await fetchMedications());
   };
 
   const createMedication = async () => {
-    if (!name.trim() || !dosage.trim() || !frequency.trim()) return;
-    await fetch(`${API_BASE_URL}/medications`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, dosage, frequency }),
-    });
+    await createNewMedication({ name, dosage, frequency });
     setName("");
     setDosage("");
     setFrequency("");
-    fetchMedications();
+    getMedications();
   };
 
   useEffect(() => {
-    fetchMedications();
+    getMedications();
   }, []);
 
   return (
