@@ -32,13 +32,13 @@ export default function PatientsPage() {
   const fetchPatients = async () => {
     const res = await fetch(`${API_BASE_URL}/patients`);
     const data = await res.json();
-    setPatients(data);
+    setPatients(data.data);
   };
 
   const fetchAssignments = async () => {
     const res = await fetch(`${API_BASE_URL}/assignments`);
     const data = await res.json();
-    setAssignments(data);
+    setAssignments(data.data);
   };
 
   const createPatient = async () => {

@@ -33,20 +33,20 @@ export default function AssignmentsPage() {
 
   const fetchAssignments = async () => {
     const res = await fetch(`${API_BASE_URL}/assignments`);
-    const data = await res.json();
-    setAssignments(data);
+    const data = await res.json()
+    setAssignments(data.data);
   };
 
   const fetchPatients = async () => {
     const res = await fetch(`${API_BASE_URL}/patients`);
     const data = await res.json();
-    setPatients(data);
+    setPatients(data.data);
   };
 
   const fetchMedications = async () => {
     const res = await fetch(`${API_BASE_URL}/medications`);
     const data = await res.json();
-    setMedications(data);
+    setMedications(data.data);
   };
 
   const createAssignment = async () => {
