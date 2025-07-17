@@ -3,26 +3,18 @@
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../lib/api";
 import { calculateRemainingDays } from "@/lib/utils";
-
-interface Patient {
-  id: number;
-  name: string;
-}
-
-interface Medication {
-  id: number;
-  name: string;
-}
-
-interface Assignment {
-  id: number;
-  startDate: string;
-  duration: number;
-  patient: Patient;
-  medication: Medication;
-}
+import Assignment from "@/lib/types/assignment";
+import Medication from "@/lib/types/medication";
+import Patient from "@/lib/types/patient";
+import useAssignments from "@/api/useAssignment";
+import usePatient from "@/api/usePatient";
+import useMedication from "@/api/useMedication";
 
 export default function AssignmentsPage() {
+  const { fetchAssignments, createNewAssignment } = useAssignments();
+  const { fetchPatients } = usePatient();
+  const { fetchMedications } = useMedication();
+
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [medications, setMedications] = useState<Medication[]>([]);
@@ -31,47 +23,36 @@ export default function AssignmentsPage() {
   const [startDate, setStartDate] = useState("");
   const [duration, setDuration] = useState("");
 
-  const fetchAssignments = async () => {
-    const res = await fetch(`${API_BASE_URL}/assignments`);
-    const data = await res.json()
-    setAssignments(data.data);
+  const getAssignments = async () => {
+    setAssignments(await fetchAssignments());
   };
 
-  const fetchPatients = async () => {
-    const res = await fetch(`${API_BASE_URL}/patients`);
-    const data = await res.json();
-    setPatients(data.data);
+  const getPatients = async () => {
+    setPatients(await fetchPatients());
   };
 
-  const fetchMedications = async () => {
-    const res = await fetch(`${API_BASE_URL}/medications`);
-    const data = await res.json();
-    setMedications(data.data);
+  const getMedications = async () => {
+    setMedications(await fetchMedications());
   };
 
   const createAssignment = async () => {
-    if (!patientId || !medicationId || !startDate || !duration) return;
-    await fetch(`${API_BASE_URL}/assignments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        patientId: Number(patientId),
-        medicationId: Number(medicationId),
-        startDate,
-        duration: Number(duration),
-      }),
+    await createNewAssignment({
+      patientId: Number(patientId),
+      medicationId: Number(medicationId),
+      startDate,
+      duration: Number(duration),
     });
     setPatientId("");
     setMedicationId("");
     setStartDate("");
     setDuration("");
-    fetchAssignments();
+    getAssignments();
   };
 
   useEffect(() => {
-    fetchAssignments();
-    fetchPatients();
-    fetchMedications();
+    getAssignments();
+    getPatients();
+    getMedications();
   }, []);
 
   return (
