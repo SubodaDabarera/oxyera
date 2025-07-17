@@ -12,44 +12,79 @@ import { Assignment } from './assignment.entity';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { Patient } from 'src/patients/patient.entity';
 import { Medication } from 'src/medications/medication.entity';
+import {
+  ApiResponse,
+  ApiSuccessResponse,
+} from 'src/common/dto/api-response.dto';
 
 @Controller('assignments')
 export class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 
   @Get(':id/remaining-days')
-  async getRemainingDays(@Param('id') id: string) {
+  async getRemainingDays(
+    @Param('id') id: string,
+  ): Promise<ApiResponse<{ assignmentId: number; remainingDays: number }>> {
     const remainingDays = await this.assignmentsService.getRemainingDays(+id);
-    return { assignmentId: +id, remainingDays };
+    return new ApiSuccessResponse('Remaining days fetched successfully', {
+      assignmentId: +id,
+      remainingDays,
+    });
   }
 
   @Post()
-  create(@Body() data: CreateAssignmentDto) {
+  async create(
+    @Body() data: CreateAssignmentDto,
+  ): Promise<ApiResponse<Assignment>> {
     const { patientId, medicationId, ...rest } = data;
-    return this.assignmentsService.create({
+    const assignment = await this.assignmentsService.create({
       ...rest,
       patient: { id: patientId } as Patient,
       medication: { id: medicationId } as Medication,
     });
+    return new ApiSuccessResponse(
+      'Assignment created successfully',
+      assignment,
+      true,
+      201,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.assignmentsService.findAll();
+  async findAll() {
+    const assignments = await this.assignmentsService.findAll();
+    return new ApiSuccessResponse(
+      'Assignments fetched successfully',
+      assignments,
+    );
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.assignmentsService.findOne(+id);
+  async findOne(
+    @Param('id') id: string,
+  ): Promise<ApiResponse<Assignment | null>> {
+    const assignment = await this.assignmentsService.findOne(+id);
+    return new ApiSuccessResponse(
+      'Assignment fetched successfully',
+      assignment,
+    );
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: Partial<Assignment>) {
-    return this.assignmentsService.update(+id, data);
+  async update(
+    @Param('id') id: string,
+    @Body() data: Partial<Assignment>,
+  ): Promise<ApiResponse<Assignment | null>> {
+    const assignment = await this.assignmentsService.update(+id, data);
+    return new ApiSuccessResponse(
+      'Assignment updated successfully',
+      assignment,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.assignmentsService.remove(+id);
+  async remove(@Param('id') id: string): Promise<ApiResponse<null>> {
+    await this.assignmentsService.remove(+id);
+    return new ApiSuccessResponse('Assignment removed successfully');
   }
 }

@@ -10,33 +10,45 @@ import {
 import { PatientsService } from './patients.service';
 import { Patient } from './patient.entity';
 import { CreatePatientDto } from './dto/create-patient.dto';
+import {
+  ApiResponse,
+  ApiSuccessResponse,
+} from 'src/common/dto/api-response.dto';
 
 @Controller('patients')
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
   @Post()
-  create(@Body() data: CreatePatientDto) {
-    return this.patientsService.create(data);
+  async create(@Body() data: CreatePatientDto): Promise<ApiResponse<Patient>> {
+    const patient = await this.patientsService.create(data);
+    return new ApiSuccessResponse('Patient created successfully', patient);
   }
 
   @Get()
-  findAll() {
-    return this.patientsService.findAll();
+  async findAll(): Promise<ApiResponse<Patient[]>> {
+    const patients = await this.patientsService.findAll();
+    return new ApiSuccessResponse('Patients fetched successfully', patients);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.patientsService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<ApiResponse<Patient | null>> {
+    const patient = await this.patientsService.findOne(+id);
+    return new ApiSuccessResponse('Patient fetched successfully', patient);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: Partial<Patient>) {
-    return this.patientsService.update(+id, data);
+  async update(
+    @Param('id') id: string,
+    @Body() data: Partial<Patient>,
+  ): Promise<ApiResponse<Patient | null>> {
+    const patient = await this.patientsService.update(+id, data);
+    return new ApiSuccessResponse('Patient updated successfully', patient);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.patientsService.remove(+id);
+  async remove(@Param('id') id: string): Promise<ApiResponse<{} | null>> {
+    await this.patientsService.remove(+id);
+    return new ApiSuccessResponse('Patient removed successfully', {});
   }
 }
